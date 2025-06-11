@@ -2,7 +2,7 @@
 NetWorthy is a full-stack web application designed to help individuals track their net worth and manage their financial assets with clarity and control.
 
 NetWorthy enables users to: </br>
-- Authenticate securely using Google login.</br>
+- Authenticate securely using Google login and Email & Password login.</br>
 - Track net worth by managing various asset and liability categories.</br>
 - Monitor investments like stocks in real-time.</br>
 - Manage liabilities, such as loans, mortgages, and lines of credit.</br>
