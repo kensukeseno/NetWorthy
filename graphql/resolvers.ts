@@ -1,18 +1,16 @@
+import prisma from "../lib/prisma";
 import { DateTimeResolver } from "graphql-scalars";
 export const resolvers = {
   DateTime: DateTimeResolver,
   Query: {
     Users: () => {
-      return [
-        {
-          id: "1234",
-          name: "test",
-          email: "test",
-          emailVerified: null,
-          image: null,
-          imageUrl: null,
+      return prisma.user.findMany({
+        select: {
+          id: true,
+          name: true,
+          email: true,
         },
-      ];
+      });
     },
   },
 };
