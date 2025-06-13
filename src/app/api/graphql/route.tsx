@@ -1,15 +1,11 @@
-import { createSchema, createYoga } from "graphql-yoga";
+import { createYoga } from "graphql-yoga";
 import { type NextRequest } from "next/server";
-import { resolvers } from "@graphql/resolvers";
-import { typeDefs } from "@graphql/schema";
+import { schema } from "../../../pothos/schema";
 
 const yoga = createYoga<{
   req: NextRequest;
 }>({
-  schema: createSchema({
-    typeDefs,
-    resolvers,
-  }),
+  schema: schema,
   graphqlEndpoint: "/api/graphql",
   fetchAPI: { Request, Response },
 });

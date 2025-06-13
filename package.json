@@ -10,6 +10,8 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
+    "@pothos/core": "^4.6.2",
+    "@pothos/plugin-prisma": "^4.8.2",
     "@prisma/client": "^6.8.2",
     "@prisma/extension-accelerate": "^2.0.0",
     "graphql": "^16.11.0",
@@ -24,6 +26,7 @@
   "devDependencies": {
     "@eslint/eslintrc": "^3",
     "@tailwindcss/postcss": "^4.1.8",
+    "@types/graphql": "^14.5.0",
     "@types/node": "^20.17.51",
     "@types/react": "^19",
     "@types/react-dom": "^19",
