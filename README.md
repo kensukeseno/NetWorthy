@@ -47,18 +47,21 @@ Run with: npx prisma studio</br>
 ## Folder Structure
 NetWorthy/  </br>
 ├── graphql/  </br>
-│ ├-- resolvers.ts // Defines resolver functions for GraphQL queries and mutations</br>
-│ └-- schema.ts // Defines the GraphQL schema using SDL</br>
+│ └-- generated-schema.graphql // Automatically created by Pothos
 ├── prisma/  </br>
-│ ├-- migrations/ // Stores database migration history for version control</br>
-│ └-- schema.ts // Defines the Prisma schema for database models and relations</br>
+│ ├── migrations/ // Stores database migration history for version control</br>
+│ └── schema.prisma // Defines the Prisma schema for database models and relations</br>
 ├── public/ // Public assets like images, icons, and static files</br>
-├── src/app/ // Main application source code (App Router structure in Next.js)</br>
-│ ├-- api/ // API routes for handling requests in Next.js (server-side logic)</br>
-│ │ ├-- auth/ // Root folder for authentication APIs</br>
-│ │ └-- graphql/ // Contains the server-side API endpoint(s) to handle GraphQL requests</br>
-│ ├-- components/ // React components used across the application</br>
-│ └-- page.tsx // Main page component for rendering UI in Next.js</br>
+├── src/
+│ ├──app/ // Main application source code (App Router structure in Next.js)</br>
+│ │ ├── api/ // API routes for handling requests in Next.js (server-side logic)</br>
+│ │ │ ├── auth/ // Root folder for authentication APIs</br>
+│ │ │ └── graphql/ // Contains the server-side API endpoint(s) to handle GraphQL requests</br>
+│ │ └── page.tsx // Main page component for rendering UI in Next.js</br>
+│ ├── components/ // React components used across the application</br> 
+│ └── pothos/
+│   ├── builder.ts // Creates the Pothos schema builder</br>
+│   └── schema.ts  // Adds object types and fields to the builder</br>
 ├── .gitignore  </br>
 ├── eslint.config.mjs // ESLint configuration for maintaining code quality</br>
 ├── next.config.ts // Next.js configuration file for customizing settings</br>
