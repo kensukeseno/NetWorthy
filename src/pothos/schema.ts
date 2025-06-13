@@ -1,4 +1,4 @@
-rimport { writeFileSync } from "fs";
+import { writeFileSync } from "fs";
 import { printSchema, lexicographicSortSchema } from "graphql";
 import { builder } from "./builder";
 import prisma from "../../lib/prisma";
