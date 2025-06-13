@@ -1,4 +1,4 @@
-import { writeFileSync } from "fs";
+rimport { writeFileSync } from "fs";
 import { printSchema, lexicographicSortSchema } from "graphql";
 import { builder } from "./builder";
 import prisma from "../../lib/prisma";
@@ -24,4 +24,4 @@ export const schema = builder.toSchema();
 const schemaAsString = printSchema(lexicographicSortSchema(schema));
 
 // Create a graphql schema as SDL
-writeFileSync("graphql/schema.graphql", schemaAsString);
+writeFileSync("graphql/generated-schema.graphql", schemaAsString);
