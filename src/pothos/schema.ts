@@ -14,6 +14,7 @@ builder.prismaObject("User", {
 builder.queryType({
   fields: (t) => ({
     users: t.prismaField({
+      description: "get a list of all users",
       type: ["User"],
       resolve: () => prisma.user.findMany(),
     }),
