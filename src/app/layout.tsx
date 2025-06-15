@@ -2,6 +2,7 @@
 
 import { ReactNode } from "react";
 import { SessionProvider } from "next-auth/react";
+import "./globals.css";
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
