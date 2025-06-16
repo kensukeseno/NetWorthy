@@ -24,15 +24,15 @@ NetWorthy enables users to: </br>
 
 ## Get Started
 
-1. Create a .env file in the root of the project
-   – Ask the project owner for the .env template or values
-   – Update the DATABASE_URL and other credentials as needed
-2. Install dependencies
-   npm install
-3. Push the Prisma schema to your database
-   This will create the necessary tables based on your schema.
-   npm run push
-4. Start the development server
+1. Create a .env file in the root of the project</br>
+   – Ask the project owner for the .env template or values</br>
+   – Update the DATABASE_URL and other credentials as needed</br>
+2. Install dependencies</br>
+   npm install</br>
+3. Push the Prisma schema to your database</br>
+   This will create the necessary tables based on your schema.</br>
+   npm run push</br>
+4. Start the development server</br>
    npm run dev
 
 ## Developer Tips
