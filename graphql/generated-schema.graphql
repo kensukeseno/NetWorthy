@@ -1,4 +1,10 @@
+type Mutation {
+  """sign up a new user"""
+  signup(data: UserCreateInput!): User
+}
+
 type Query {
+  """get a list of all users"""
   users: [User!]
 }
 
@@ -6,4 +12,10 @@ type User {
   email: String
   id: String
   name: String
+}
+
+input UserCreateInput {
+  email: String!
+  name: String!
+  password: String!
 }
