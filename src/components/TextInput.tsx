@@ -15,7 +15,7 @@ const TextInput = React.forwardRef<HTMLInputElement, TextInputProps>(
           </label>
         )}
         <input
-          type="text"
+          type={inputProps.type}
           placeholder={inputProps.placeholder}
           ref={ref}
           className="text-sm w-full border border-gray-300 rounded-md px-4 py-2

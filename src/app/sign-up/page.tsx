@@ -1,5 +1,5 @@
-import { FcGoogle } from 'react-icons/fc';
 import SignupForm from './form';
+import GoogleSignUp from './google';
 
 export default function SignUpPage() {
   return (
@@ -28,13 +28,7 @@ export default function SignUpPage() {
               <span>Or continue with</span>
               <div className="flex-1 border-t border-gray-300"></div>
             </div>
-            <button
-              type="submit"
-              className="flex items-center justify-center font-semibold py-2 px-4 rounded border border-gray-300 hover:bg-gray-50 transition w-full"
-            >
-              <FcGoogle className="text-xl" />
-              Google
-            </button>
+            <GoogleSignUp />
           </div>
         </div>
       </div>
