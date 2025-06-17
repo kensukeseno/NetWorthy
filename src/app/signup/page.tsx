@@ -1,5 +1,7 @@
-import SignupForm from './form';
+'use client';
+import SignupForm from './signupForm';
 import GoogleSignUp from './google';
+import { redirect } from 'next/navigation';
 
 export default function SignUpPage() {
   return (
@@ -16,9 +18,12 @@ export default function SignUpPage() {
             <h2 className="font-bold text-lg mb-1">Create your account</h2>
             <p>
               Already a member?{' '}
-              <a href="" className="font-bold text-blue-600">
+              <span
+                onClick={() => redirect('/login')}
+                className="cursor-pointer font-bold text-blue-600"
+              >
                 Sign in Now
-              </a>
+              </span>
             </p>
           </div>
           <SignupForm />
