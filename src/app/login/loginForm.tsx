@@ -3,7 +3,7 @@
 import TextInput from '../../components/TextInput';
 // import { useMutation } from 'urql';
 // import { useRef, useState } from 'react';
-// import { redirect } from 'next/navigation';
+import { redirect } from 'next/navigation';
 
 // const SIGNUP_MUTATION = `
 //   mutation($data: UserCreateInput!) {
@@ -79,7 +79,7 @@ export default function LoginForm() {
           Remember me
         </label>
         <span
-          // onClick={() => redirect('')}
+          onClick={() => redirect('/login/forget-password')}
           className="cursor-pointer font-bold text-blue-600"
         >
           Forgot Password?
