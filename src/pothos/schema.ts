@@ -19,6 +19,7 @@ builder.prismaObject('User', {
     id: t.exposeString('id'),
     name: t.exposeString('name'),
     email: t.exposeString('email'),
+    password: t.exposeString('password'),
   }),
 });
 
@@ -29,6 +30,24 @@ builder.queryType({
       description: 'get a list of all users',
       type: ['User'],
       resolve: () => prisma.user.findMany(),
+    }),
+  }),
+});
+
+builder.queryType({
+  fields: (t) => ({
+    user: t.prismaField({
+      description: 'Get a user by credentials',
+      type: 'User',
+      args: {
+        email: t.arg.string({ required: true }),
+      },
+      resolve: async (query, root, args, ctx, info) => {
+        return prisma.user.findUnique({
+          ...query,
+          where: { email: args.email },
+        });
+      },
     }),
   }),
 });

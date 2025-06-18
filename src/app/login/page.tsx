@@ -1,6 +1,6 @@
 'use client';
 import LoginForm from './loginForm';
-import GoogleSignUp from './google';
+import GoogleSignIn from './google';
 import { redirect } from 'next/navigation';
 
 export default function LogInPage() {
@@ -25,7 +25,7 @@ export default function LogInPage() {
           <span>Or continue with</span>
           <div className="flex-1 border-t border-gray-300"></div>
         </div>
-        <GoogleSignUp />
+        <GoogleSignIn />
       </div>
     </div>
   );

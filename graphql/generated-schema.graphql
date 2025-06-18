@@ -4,6 +4,9 @@ type Mutation {
 }
 
 type Query {
+  """Get a user by credentials"""
+  user(email: String!): User
+
   """get a list of all users"""
   users: [User!]
 }
@@ -12,6 +15,7 @@ type User {
   email: String
   id: String
   name: String
+  password: String
 }
 
 input UserCreateInput {
