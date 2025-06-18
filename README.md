@@ -32,7 +32,9 @@ NetWorthy enables users to: </br>
 3. Push the Prisma schema to your database</br>
    This will create the necessary tables based on your schema.</br>
    npm run push</br>
-4. Start the development server</br>
+4. Generate Prisma Client</br>
+   npx prisma generate</br>
+5. Start the development server</br>
    npm run dev
 
 ## Developer Tips
