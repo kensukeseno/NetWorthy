@@ -37,6 +37,7 @@ model Account {
   providerAccountId  String
   access_token       String? 
   token_type         String?
+  expires_at         Int?
   scope              String?
   id_token           String?
   session_state      String?
