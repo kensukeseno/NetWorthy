@@ -27,6 +27,8 @@ model User {
 
   accounts      Account[]
   sessions      Session[]
+  asset         Asset[]
+  liability     Liability[]
 }
 
 model Account {
@@ -54,4 +56,78 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Asset {
+  id    String @id @default(cuid())
+  userId  String
+  name  String
+  typeId  Int
+  value Decimal
+  currencyId Int
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  assetType AssetType @relation(fields: [typeId], references: [id])
+  currency  Currnency @relation(fields: [currencyId], references: [id])
+  assetHistory  AssetHistory[]
+}
+
+model AssetHistory{
+  id    Int @id @default(autoincrement())
+  assetId String
+  value Decimal
+  timestamp DateTime  @default(now())
+
+  asset Asset @relation(fields: [assetId], references:[id])
+}
+
+model AssetType {
+  id    Int @id @default(autoincrement())
+  name  String  @unique
+  
+  asset Asset[]
+}
+
+model Currnency {
+  id    Int @id @default(autoincrement())
+  code  String  @unique @db.VarChar(3)
+  
+  asset Asset[]
+  liability Liability[]
+}
+
+model Liability {
+  id    String @id @default(cuid())
+  userId  String
+  name  String
+  typeId  Int
+  value Decimal
+  currencyId Int
+  referenceUrl  String?
+  monthlyPayment  Decimal?
+  interestRate  Decimal?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id])
+  liabilityType LiabilityType @relation(fields: [typeId], references: [id])
+  currency  Currnency @relation(fields: [currencyId], references: [id])
+  liabilityHistory  LiabilityHistory[]
+}
+
+model LiabilityType {
+  id    Int @id @default(autoincrement())
+  name  String  @unique
+  liability Liability[]
+}
+
+model LiabilityHistory{
+  id    Int @id @default(autoincrement())
+  liabilityId String
+  value Decimal
+  timestamp DateTime  @default(now())
+
+  liability Liability @relation(fields: [liabilityId], references:[id])
 }
