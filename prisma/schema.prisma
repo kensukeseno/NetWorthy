@@ -25,15 +25,10 @@ model User {
   emailVerified DateTime?
   image         String?
 
-<<<<<<< HEAD
-  accounts Account[]
-  sessions Session[]
-=======
-  accounts      Account[]
-  sessions      Session[]
-  asset         Asset[]
-  liability     Liability[]
->>>>>>> e3d6c913660708df8b4ced663454889d75c20f17
+  accounts  Account[]
+  sessions  Session[]
+  asset     Asset[]
+  liability Liability[]
 }
 
 model Account {
@@ -62,80 +57,77 @@ model Session {
 
   user User @relation(fields: [userId], references: [id])
 }
-<<<<<<< HEAD
-=======
 
 model Asset {
-  id    String @id @default(cuid())
-  userId  String
-  name  String
-  typeId  Int
-  value Decimal
+  id         String   @id @default(cuid())
+  userId     String
+  name       String
+  typeId     Int
+  value      Decimal
   currencyId Int
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
-  assetType AssetType @relation(fields: [typeId], references: [id])
-  currency  Currnency @relation(fields: [currencyId], references: [id])
-  assetHistory  AssetHistory[]
+  user         User           @relation(fields: [userId], references: [id])
+  assetType    AssetType      @relation(fields: [typeId], references: [id])
+  currency     Currnency      @relation(fields: [currencyId], references: [id])
+  assetHistory AssetHistory[]
 }
 
-model AssetHistory{
-  id    Int @id @default(autoincrement())
-  assetId String
-  value Decimal
-  timestamp DateTime  @default(now())
+model AssetHistory {
+  id        Int      @id @default(autoincrement())
+  assetId   String
+  value     Decimal
+  timestamp DateTime @default(now())
 
-  asset Asset @relation(fields: [assetId], references:[id])
+  asset Asset @relation(fields: [assetId], references: [id])
 }
 
 model AssetType {
-  id    Int @id @default(autoincrement())
-  name  String  @unique
-  
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
   asset Asset[]
 }
 
 model Currnency {
-  id    Int @id @default(autoincrement())
-  code  String  @unique @db.VarChar(3)
-  
-  asset Asset[]
+  id   Int    @id @default(autoincrement())
+  code String @unique @db.VarChar(3)
+
+  asset     Asset[]
   liability Liability[]
 }
 
 model Liability {
-  id    String @id @default(cuid())
-  userId  String
-  name  String
-  typeId  Int
-  value Decimal
-  currencyId Int
-  referenceUrl  String?
-  monthlyPayment  Decimal?
-  interestRate  Decimal?
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @default(now())
+  id             String   @id @default(cuid())
+  userId         String
+  name           String
+  typeId         Int
+  value          Decimal
+  currencyId     Int
+  referenceUrl   String?
+  monthlyPayment Decimal?
+  interestRate   Decimal?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @default(now())
 
-  user User @relation(fields: [userId], references: [id])
-  liabilityType LiabilityType @relation(fields: [typeId], references: [id])
-  currency  Currnency @relation(fields: [currencyId], references: [id])
-  liabilityHistory  LiabilityHistory[]
+  user             User               @relation(fields: [userId], references: [id])
+  liabilityType    LiabilityType      @relation(fields: [typeId], references: [id])
+  currency         Currnency          @relation(fields: [currencyId], references: [id])
+  liabilityHistory LiabilityHistory[]
 }
 
 model LiabilityType {
-  id    Int @id @default(autoincrement())
-  name  String  @unique
+  id        Int         @id @default(autoincrement())
+  name      String      @unique
   liability Liability[]
 }
 
-model LiabilityHistory{
-  id    Int @id @default(autoincrement())
+model LiabilityHistory {
+  id          Int      @id @default(autoincrement())
   liabilityId String
-  value Decimal
-  timestamp DateTime  @default(now())
+  value       Decimal
+  timestamp   DateTime @default(now())
 
-  liability Liability @relation(fields: [liabilityId], references:[id])
+  liability Liability @relation(fields: [liabilityId], references: [id])
 }
->>>>>>> e3d6c913660708df8b4ced663454889d75c20f17
