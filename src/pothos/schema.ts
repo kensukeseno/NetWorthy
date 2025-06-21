@@ -19,6 +19,29 @@ const UserCreateInput = builder.inputType('UserCreateInput', {
   }),
 });
 
+const AssetCreateInput = builder.inputType('AssetCreateInput', {
+  fields: (t) => ({
+    userId: t.field({ type: 'String', required: true }),
+    name: t.field({ type: 'String', required: true }),
+    typeId: t.field({ type: 'Int', required: true }),
+    value: t.field({ type: 'Decimal', required: true }),
+    currencyId: t.field({ type: 'Int', required: true }),
+  }),
+});
+
+const LiabilityCreateInput = builder.inputType('LiabilityCreateInput', {
+  fields: (t) => ({
+    userId: t.field({ type: 'String', required: true }),
+    name: t.field({ type: 'String', required: true }),
+    typeId: t.field({ type: 'Int', required: true }),
+    value: t.field({ type: 'Decimal', required: true }),
+    currencyId: t.field({ type: 'Int', required: true }),
+    referenceUrl: t.field({ type: 'String', required: false }),
+    monthlyPayment: t.field({ type: 'Decimal', required: false }),
+    interestRate: t.field({ type: 'Decimal', required: false }),
+  }),
+});
+
 // Define Object types
 builder.prismaObject('User', {
   fields: (t) => ({
@@ -211,6 +234,61 @@ builder.mutationType({
             email: args.data.email,
             // Hash a password
             password: await bcrypt.hash(args.data.password, 10),
+          },
+        });
+      },
+    }),
+  }),
+});
+
+builder.mutationType({
+  fields: (t) => ({
+    addAsset: t.prismaField({
+      description: 'create a new asset for a user',
+      type: 'Asset',
+      args: {
+        data: t.arg({
+          type: AssetCreateInput,
+          required: true,
+        }),
+      },
+      resolve: async (_query, _parent, args, _ctx, _info) => {
+        return prisma.asset.create({
+          data: {
+            userId: args.data.userId,
+            name: args.data.name,
+            typeId: args.data.typeId,
+            value: args.data.value,
+            currencyId: args.data.currencyId,
+          },
+        });
+      },
+    }),
+  }),
+});
+
+builder.mutationType({
+  fields: (t) => ({
+    addLiability: t.prismaField({
+      description: 'create a new liability for a user',
+      type: 'Liability',
+      args: {
+        data: t.arg({
+          type: LiabilityCreateInput,
+          required: true,
+        }),
+      },
+      resolve: async (_query, _parent, args, _ctx, _info) => {
+        return prisma.liability.create({
+          data: {
+            userId: args.data.userId,
+            name: args.data.name,
+            typeId: args.data.typeId,
+            value: args.data.value,
+            currencyId: args.data.currencyId,
+            referenceUrl: args.data.referenceUrl!,
+            monthlyPayment: args.data.monthlyPayment!,
+            interestRate: args.data.interestRate!,
           },
         });
       },

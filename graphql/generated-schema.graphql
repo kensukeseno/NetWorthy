@@ -10,6 +10,14 @@ type Asset {
   value: Decimal
 }
 
+input AssetCreateInput {
+  currencyId: Int!
+  name: String!
+  typeId: Int!
+  userId: String!
+  value: Decimal!
+}
+
 type AssetHistory {
   asset: Asset
   id: Int
@@ -53,6 +61,17 @@ type Liability {
   value: Decimal
 }
 
+input LiabilityCreateInput {
+  currencyId: Int!
+  interestRate: Decimal
+  monthlyPayment: Decimal
+  name: String!
+  referenceUrl: String
+  typeId: Int!
+  userId: String!
+  value: Decimal!
+}
+
 type LiabilityHistory {
   id: Int
   liability: Liability
@@ -67,6 +86,12 @@ type LiabilityType {
 }
 
 type Mutation {
+  """create a new asset for a user"""
+  addAsset(data: AssetCreateInput!): Asset
+
+  """create a new liability for a user"""
+  addLiability(data: LiabilityCreateInput!): Liability
+
   """sign up a new user"""
   signup(data: UserCreateInput!): User
 }
