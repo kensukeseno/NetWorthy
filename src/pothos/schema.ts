@@ -3,8 +3,14 @@ import { printSchema, lexicographicSortSchema } from 'graphql';
 import { builder } from './builder';
 import prisma from '../../lib/prisma';
 import bcrypt from 'bcryptjs';
+import { GraphQLDecimal } from './decimal';
+import { GraphQLDateTime } from 'graphql-scalars';
 
-// Define custom types
+// Register custom scalars with the buider
+builder.addScalarType('Decimal', GraphQLDecimal, {});
+builder.addScalarType('DateTime', GraphQLDateTime, {});
+
+// Define custom input types
 const UserCreateInput = builder.inputType('UserCreateInput', {
   fields: (t) => ({
     name: t.field({ type: 'String', required: true }),
@@ -20,6 +26,82 @@ builder.prismaObject('User', {
     name: t.exposeString('name'),
     email: t.exposeString('email'),
     password: t.exposeString('password'),
+    asset: t.relation('asset'),
+    liability: t.relation('liability'),
+  }),
+});
+
+builder.prismaObject('Asset', {
+  fields: (t) => ({
+    id: t.exposeString('id'),
+    name: t.exposeString('name'),
+    value: t.expose('value', { type: 'Decimal' }),
+    createdAt: t.expose('createdAt', { type: 'DateTime' }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
+    user: t.relation('user'),
+    assetType: t.relation('assetType'),
+    currency: t.relation('currency'),
+    assetHistory: t.relation('assetHistory'),
+  }),
+});
+
+builder.prismaObject('AssetHistory', {
+  fields: (t) => ({
+    id: t.exposeInt('id'),
+    value: t.expose('value', { type: 'Decimal' }),
+    timestamp: t.expose('timestamp', { type: 'DateTime' }),
+    asset: t.relation('asset'),
+  }),
+});
+
+builder.prismaObject('AssetType', {
+  fields: (t) => ({
+    id: t.exposeInt('id'),
+    name: t.exposeString('name'),
+    asset: t.relation('asset'),
+  }),
+});
+
+builder.prismaObject('Currnency', {
+  fields: (t) => ({
+    id: t.exposeInt('id'),
+    code: t.exposeString('code'),
+    asset: t.relation('asset'),
+    liability: t.relation('liability'),
+  }),
+});
+
+builder.prismaObject('Liability', {
+  fields: (t) => ({
+    id: t.exposeString('id'),
+    name: t.exposeString('name'),
+    value: t.expose('value', { type: 'Decimal' }),
+    referenceUrl: t.exposeString('referenceUrl'),
+    monthlyPayment: t.expose('monthlyPayment', { type: 'Decimal' }),
+    interestRate: t.expose('interestRate', { type: 'Decimal' }),
+    createdAt: t.expose('createdAt', { type: 'DateTime' }),
+    updatedAt: t.expose('updatedAt', { type: 'DateTime' }),
+    user: t.relation('user'),
+    liabilityType: t.relation('liabilityType'),
+    currency: t.relation('currency'),
+    liabilityHistory: t.relation('liabilityHistory'),
+  }),
+});
+
+builder.prismaObject('LiabilityType', {
+  fields: (t) => ({
+    id: t.exposeInt('id'),
+    name: t.exposeString('name'),
+    liability: t.relation('liability'),
+  }),
+});
+
+builder.prismaObject('LiabilityHistory', {
+  fields: (t) => ({
+    id: t.exposeInt('id'),
+    value: t.expose('value', { type: 'Decimal' }),
+    timestamp: t.expose('timestamp', { type: 'DateTime' }),
+    liability: t.relation('liability'),
   }),
 });
 
@@ -29,7 +111,10 @@ builder.queryType({
     users: t.prismaField({
       description: 'get a list of all users',
       type: ['User'],
-      resolve: () => prisma.user.findMany(),
+      resolve: (query, _parent, _args, _ctx) =>
+        prisma.user.findMany({
+          ...query,
+        }),
     }),
   }),
 });
@@ -42,12 +127,67 @@ builder.queryType({
       args: {
         email: t.arg.string({ required: true }),
       },
-      resolve: async (query, root, args, ctx, info) => {
+      resolve: async (query, _root, args, _ctx, _info) => {
         return prisma.user.findUnique({
           ...query,
           where: { email: args.email },
         });
       },
+    }),
+  }),
+});
+
+builder.queryType({
+  fields: (t) => ({
+    assets: t.prismaField({
+      description: 'Get a list of assets',
+      type: ['Asset'],
+      resolve: (query, _parent, _args, _ctx) =>
+        prisma.asset.findMany({ ...query }),
+    }),
+  }),
+});
+
+builder.queryType({
+  fields: (t) => ({
+    liabilities: t.prismaField({
+      description: 'Get a list of liabilities',
+      type: ['Liability'],
+      resolve: (query, _parent, _args, _ctx) =>
+        prisma.liability.findMany({ ...query }),
+    }),
+  }),
+});
+
+builder.queryType({
+  fields: (t) => ({
+    assetTypes: t.prismaField({
+      description: 'Get a list of asset types',
+      type: ['AssetType'],
+      resolve: (query, _parent, _args, _ctx) =>
+        prisma.assetType.findMany({ ...query }),
+    }),
+  }),
+});
+
+builder.queryType({
+  fields: (t) => ({
+    liabilityTypes: t.prismaField({
+      description: 'Get a list of liability types',
+      type: ['LiabilityType'],
+      resolve: (query, _parent, _args, _ctx) =>
+        prisma.liabilityType.findMany({ ...query }),
+    }),
+  }),
+});
+
+builder.queryType({
+  fields: (t) => ({
+    currnencies: t.prismaField({
+      description: 'Get a list of currnencies',
+      type: ['Currnency'],
+      resolve: (query, _parent, _args, _ctx) =>
+        prisma.currnency.findMany({ ...query }),
     }),
   }),
 });
