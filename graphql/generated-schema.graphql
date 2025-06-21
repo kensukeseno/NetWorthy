@@ -1,9 +1,117 @@
+type Asset {
+  assetHistory: [AssetHistory!]
+  assetType: AssetType
+  createdAt: DateTime
+  currency: Currnency
+  id: String
+  name: String
+  updatedAt: DateTime
+  user: User
+  value: Decimal
+}
+
+input AssetCreateInput {
+  currencyId: Int!
+  name: String!
+  typeId: Int!
+  userId: String!
+  value: Decimal!
+}
+
+type AssetHistory {
+  asset: Asset
+  id: Int
+  timestamp: DateTime
+  value: Decimal
+}
+
+type AssetType {
+  asset: [Asset!]
+  id: Int
+  name: String
+}
+
+type Currnency {
+  asset: [Asset!]
+  code: String
+  id: Int
+  liability: [Liability!]
+}
+
+"""
+A date-time string at UTC, such as 2007-12-03T10:15:30Z, compliant with the `date-time` format outlined in section 5.6 of the RFC 3339 profile of the ISO 8601 standard for representation of dates and times using the Gregorian calendar.
+"""
+scalar DateTime
+
+"""High-precision decimal scalar"""
+scalar Decimal
+
+type Liability {
+  createdAt: DateTime
+  currency: Currnency
+  id: String
+  interestRate: Decimal
+  liabilityHistory: [LiabilityHistory!]
+  liabilityType: LiabilityType
+  monthlyPayment: Decimal
+  name: String
+  referenceUrl: String
+  updatedAt: DateTime
+  user: User
+  value: Decimal
+}
+
+input LiabilityCreateInput {
+  currencyId: Int!
+  interestRate: Decimal
+  monthlyPayment: Decimal
+  name: String!
+  referenceUrl: String
+  typeId: Int!
+  userId: String!
+  value: Decimal!
+}
+
+type LiabilityHistory {
+  id: Int
+  liability: Liability
+  timestamp: DateTime
+  value: Decimal
+}
+
+type LiabilityType {
+  id: Int
+  liability: [Liability!]
+  name: String
+}
+
 type Mutation {
+  """create a new asset for a user"""
+  addAsset(data: AssetCreateInput!): Asset
+
+  """create a new liability for a user"""
+  addLiability(data: LiabilityCreateInput!): Liability
+
   """sign up a new user"""
   signup(data: UserCreateInput!): User
 }
 
 type Query {
+  """Get a list of asset types"""
+  assetTypes: [AssetType!]
+
+  """Get a list of assets"""
+  assets: [Asset!]
+
+  """Get a list of currnencies"""
+  currnencies: [Currnency!]
+
+  """Get a list of liabilities"""
+  liabilities: [Liability!]
+
+  """Get a list of liability types"""
+  liabilityTypes: [LiabilityType!]
+
   """Get a user by credentials"""
   user(email: String!): User
 
@@ -12,8 +120,10 @@ type Query {
 }
 
 type User {
+  asset: [Asset!]
   email: String
   id: String
+  liability: [Liability!]
   name: String
   password: String
 }
