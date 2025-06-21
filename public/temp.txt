@@ -1,1 +1,0 @@
-This file will be deleted once there is another file in the public folder.

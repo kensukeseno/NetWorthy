@@ -1,8 +1,7 @@
-// /pothos/builder.ts
-import SchemaBuilder from "@pothos/core";
-import PrismaPlugin from "@pothos/plugin-prisma";
-import type PrismaTypes from "@pothos/plugin-prisma/generated";
-import { PrismaClient } from "@prisma/client";
+import SchemaBuilder from '@pothos/core';
+import PrismaPlugin from '@pothos/plugin-prisma';
+import type PrismaTypes from '@pothos/plugin-prisma/generated';
+import { PrismaClient } from '@prisma/client';
 
 const prisma = new PrismaClient();
 
