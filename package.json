@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.9.1",
+    "@heroicons/react": "^2.2.0",
     "@pothos/core": "^4.6.2",
     "@pothos/plugin-prisma": "^4.8.2",
     "@prisma/client": "^6.8.2",

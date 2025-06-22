@@ -1,6 +1,7 @@
 'use client';
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
+import SideBar from '@/components/SideBar';
 
 export default function DashboardLayout({
   children,
@@ -16,5 +17,10 @@ export default function DashboardLayout({
 
   if (status === 'loading') return <p>Loading...</p>;
 
-  return <>{children}</>;
+  return (
+    <div className="flex flex-row">
+      <SideBar width="w-[20%]" />
+      {children}
+    </div>
+  );
 }
