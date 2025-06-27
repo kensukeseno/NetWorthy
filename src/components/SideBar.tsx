@@ -14,7 +14,7 @@ type SideBarProps = {
 export default function SideBar({ width }: SideBarProps) {
   return (
     <div
-      className={`fixed top-0 left-0 flex flex-col pt-5 ${width} h-screen border-r-4 border-gray-100 shadow`}
+      className={`flex flex-col pt-5 ${width} h-screen border-r-4 border-gray-100 shadow`}
     >
       <div className="flex flex-row items-center gap-2 mb-6 w-[80%] mx-auto">
         <img src="images/logo.png" className="w-8 h-8" />

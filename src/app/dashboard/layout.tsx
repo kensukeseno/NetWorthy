@@ -2,6 +2,7 @@
 import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import SideBar from '@/components/SideBar';
+import Header from '@/components/Header';
 
 export default function DashboardLayout({
   children,
@@ -20,7 +21,10 @@ export default function DashboardLayout({
   return (
     <div className="flex flex-row">
       <SideBar width="w-[20%]" />
-      {children}
+      <div className="flex flex-col p-5 w-[80%]">
+        <Header />
+        {children}
+      </div>
     </div>
   );
 }
