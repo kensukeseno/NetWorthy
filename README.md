@@ -49,7 +49,7 @@ NetWorthy enables users to: </br>
 ## Developer Tips
 
 - GraphQL Playground</br>
-  Open http://localhost:3000/api/gql</br>
+  Open http://localhost:3000/api/graphql</br>
   → This is the GraphQL Yoga playground, a web UI for querying and testing your GraphQL API.</br>
 
 - Prisma Studio</br>
