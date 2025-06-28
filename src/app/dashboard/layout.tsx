@@ -4,6 +4,7 @@ import { redirect } from 'next/navigation';
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
 import Summary from '@/components/Summary';
+import Graph from '@/components/Graph';
 
 export default function DashboardLayout({
   children,
@@ -26,6 +27,7 @@ export default function DashboardLayout({
         <Header />
         {children}
         <Summary />
+        <Graph />
       </div>
     </div>
   );
