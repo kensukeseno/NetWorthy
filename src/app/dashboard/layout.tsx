@@ -3,6 +3,7 @@ import { useSession } from 'next-auth/react';
 import { redirect } from 'next/navigation';
 import SideBar from '@/components/SideBar';
 import Header from '@/components/Header';
+import Summary from '@/components/Summary';
 
 export default function DashboardLayout({
   children,
@@ -24,6 +25,7 @@ export default function DashboardLayout({
       <div className="flex flex-col p-5 w-[80%]">
         <Header />
         {children}
+        <Summary />
       </div>
     </div>
   );
