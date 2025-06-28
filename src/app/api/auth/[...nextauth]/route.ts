@@ -127,6 +127,18 @@ const handler = NextAuth({
 
       return token;
     },
+    async session({ session, token }) {
+      // You control what session() returns to the client here
+      if (session.user) {
+        session.user.email = token.email as string;
+        session.user.name = token.name as string;
+      }
+
+      // Add any custom fields to session if needed
+      // session.customField = token.customField;
+
+      return session;
+    },
     // async redirect({ url, baseUrl }) {
     //   // Allow relative URLs (e.g. /dashboard)
     //   if (url.startsWith('/')) return baseUrl + url;

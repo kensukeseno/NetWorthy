@@ -4,11 +4,16 @@ import {
   BellIcon,
   PlusIcon,
 } from '@heroicons/react/24/outline';
+import { useSession } from 'next-auth/react';
 
 export default function Header() {
+  const { data: session } = useSession();
+
   return (
     <div className="flex flex-row justify-between">
-      <div className="text-2xl font-medium">Welcome Back, [name]</div>
+      <div className="text-2xl font-medium">
+        Welcome Back, {session?.user?.name}
+      </div>
       <div className="flex flex-row gap-1 items-center">
         <MagnifyingGlassIcon className="h-5 w-5" />
         <BellIcon className="h-5 w-5" />
