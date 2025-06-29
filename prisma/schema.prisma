@@ -70,7 +70,7 @@ model Asset {
 
   user         User           @relation(fields: [userId], references: [id])
   assetType    AssetType      @relation(fields: [typeId], references: [id])
-  currency     Currnency      @relation(fields: [currencyId], references: [id])
+  currency     Currency      @relation(fields: [currencyId], references: [id])
   assetHistory AssetHistory[]
 }
 
@@ -90,12 +90,13 @@ model AssetType {
   asset Asset[]
 }
 
-model Currnency {
+model Currency {
   id   Int    @id @default(autoincrement())
   code String @unique @db.VarChar(3)
 
   asset     Asset[]
   liability Liability[]
+	@@map("Currency")
 }
 
 model Liability {
@@ -113,7 +114,7 @@ model Liability {
 
   user             User               @relation(fields: [userId], references: [id])
   liabilityType    LiabilityType      @relation(fields: [typeId], references: [id])
-  currency         Currnency          @relation(fields: [currencyId], references: [id])
+  currency         Currency          @relation(fields: [currencyId], references: [id])
   liabilityHistory LiabilityHistory[]
 }
 

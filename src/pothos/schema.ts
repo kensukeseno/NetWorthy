@@ -1,4 +1,4 @@
-import { writeFileSync } from 'fs';
+import { writeFileSync, mkdirSync } from 'fs';
 import { printSchema, lexicographicSortSchema } from 'graphql';
 import { builder } from './builder';
 import prisma from '../../lib/prisma';
@@ -85,7 +85,7 @@ builder.prismaObject('AssetType', {
   }),
 });
 
-builder.prismaObject('Currnency', {
+builder.prismaObject('Currency', {
   fields: (t) => ({
     id: t.exposeInt('id'),
     code: t.exposeString('code'),
@@ -206,11 +206,11 @@ builder.queryType({
 
 builder.queryType({
   fields: (t) => ({
-    currnencies: t.prismaField({
-      description: 'Get a list of currnencies',
-      type: ['Currnency'],
+    currencies: t.prismaField({
+      description: 'Get a list of currencies',
+      type: ['Currency'],
       resolve: (query, _parent, _args, _ctx) =>
-        prisma.currnency.findMany({ ...query }),
+        prisma.currency.findMany({ ...query }),
     }),
   }),
 });
@@ -300,4 +300,5 @@ export const schema = builder.toSchema();
 const schemaAsString = printSchema(lexicographicSortSchema(schema));
 
 // Create a graphql schema as SDL
+mkdirSync('graphql', { recursive: true });
 writeFileSync('graphql/generated-schema.graphql', schemaAsString);
