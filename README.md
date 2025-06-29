@@ -38,13 +38,15 @@ NetWorthy enables users to: </br>
 3. Push the Prisma schema to your database</br>
    This will create the necessary tables based on your schema.</br>
    npm run push</br>
-4. Seed the database with currencies </br>
-   This will populate the Currency table.</br>
+4. Seed the database</br>
+   This will a test user with assets and liabitilies.</br>
    npx prisma db seed</br>
 5. Generate Prisma Client</br>
    npx prisma generate</br>
 6. Start the development server</br>
-   npm run dev
+   npm run dev</br>
+7. Login with the test account</br>
+   Email Address: test@test.com, Password: test
 
 ## Developer Tips
 
