@@ -1,6 +1,6 @@
 'use client';
-import SignupForm from './signupForm';
-import GoogleSignUp from './google';
+import SignupForm from './SignupForm';
+import GoogleSignUp from './Google';
 import { redirect } from 'next/navigation';
 
 export default function SignUpPage() {
