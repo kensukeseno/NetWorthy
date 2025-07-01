@@ -29,6 +29,8 @@ model User {
   sessions  Session[]
   asset     Asset[]
   liability Liability[]
+  resetToken        String?   // For password reset
+  resetTokenExpiry  DateTime? // When the token expires
 }
 
 model Account {
