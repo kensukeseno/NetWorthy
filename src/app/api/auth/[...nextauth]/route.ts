@@ -24,48 +24,44 @@ const handler = NextAuth({
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials, req) {
-        // Look up the user from the credentials supplied
-        const SignInQuery = `
-          query($email: String!) {
-            user(email: $email) {
-            id
-            name  
-            email
-            password
-            }
-          }
-        `;
         // if credentials is undefined, return null
         if (!credentials) {
           return null;
         }
-        const result = await client
-          .query(SignInQuery, {
-            email: credentials.email,
-          })
-          .toPromise();
-        if (result.data) {
-          if (!result.data.user) {
+
+        try {
+          // Use Prisma directly to fetch user
+          const user = await prisma.user.findUnique({
+            where: {
+              email: credentials.email,
+            },
+          });
+
+          if (!user || !user.password) {
+            console.log('User not found or no password');
             return null;
           }
+
           // Match passwords
-          if (
-            await bcrypt.compare(
-              credentials.password,
-              result.data.user.password,
-            )
-          ) {
+          const isValidPassword = await bcrypt.compare(
+            credentials.password,
+            user.password,
+          );
+
+          if (isValidPassword) {
+            console.log('Password match successful for user:', user.email);
             // Any object returned will be saved in `user` property of the JWT
             return {
-              id: result.data.user.id,
-              name: result.data.user.name,
-              email: result.data.user.email,
+              id: user.id,
+              name: user.name,
+              email: user.email,
             };
           } else {
+            console.log('Password match failed for user:', user.email);
             return null;
           }
-        } else {
-          // Return null then an error will be displayed advising the user to check their details.
+        } catch (error) {
+          console.error('Error during authentication:', error);
           return null;
         }
       },

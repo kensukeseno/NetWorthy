@@ -55,7 +55,7 @@ export default function LoginForm() {
           <input type="checkbox" ref={rememberMeRef}></input> Remember me
         </label>
         <span
-          onClick={() => redirect('/login/forget-password')}
+          onClick={() => redirect('/login/forgot-password')}
           className="cursor-pointer font-bold text-blue-600"
         >
           Forgot Password?
