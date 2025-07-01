@@ -1,21 +1,38 @@
-'use client'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+'use client';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+  ResponsiveContainer,
+} from 'recharts';
 
 // Mock data
 const data = [
-  { month: 'Sep', blue: 1000, orange: 2000, green: 2500 },
-  { month: 'Oct', blue: 1200, orange: 2100, green: 2300 },
-  { month: 'Nov', blue: 1400, orange: 1800, green: 2100 },
-  { month: 'Dec', blue: 1600, orange: 1500, green: 1900 },
-  { month: 'Jan', blue: 1800, orange: 2200, green: 2700 },
-  { month: 'Feb', blue: 2000, orange: 2800, green: 2400 },
-  { month: 'Mar', blue: 2200, orange: 2600, green: 2200 },
-  { month: 'Apr', blue: 2400, orange: 2400, green: 2600 },
-  { month: 'May', blue: 2600, orange: 2000, green: 2800 },
-  { month: 'Jun', blue: 2800, orange: 2300, green: 2500 },
-  { month: 'Jul', blue: 3000, orange: 2600, green: 2300 },
-  { month: 'Aug', blue: 3200, orange: 2900, green: 3100 }
+  { date: new Date('2021-01-01'), networth: 1000, asset: 1500, liability: 500 },
+  { date: new Date('2021-06-09'), networth: 1200, asset: 1700, liability: 500 },
+  { date: new Date('2021-11-17'), networth: 1400, asset: 2000, liability: 600 },
+  { date: new Date('2022-04-27'), networth: 1600, asset: 2200, liability: 600 },
+  { date: new Date('2022-10-04'), networth: 1800, asset: 2500, liability: 700 },
+  { date: new Date('2023-03-13'), networth: 2000, asset: 2700, liability: 700 },
+  { date: new Date('2023-08-20'), networth: 1200, asset: 1800, liability: 600 },
+  { date: new Date('2024-01-27'), networth: 2400, asset: 3000, liability: 600 },
+  { date: new Date('2024-07-05'), networth: 2600, asset: 3300, liability: 700 },
+  { date: new Date('2024-12-12'), networth: 2800, asset: 3600, liability: 800 },
+  { date: new Date('2025-05-20'), networth: 3000, asset: 3900, liability: 900 },
+  {
+    date: new Date('2025-06-07'),
+    networth: 3200,
+    asset: 4200,
+    liability: 1000,
+  },
 ];
+
+const xMin = Number(new Date('2021-01-01'));
+const xMax = Number(new Date());
 
 const Graph = () => {
   return (
@@ -31,48 +48,53 @@ const Graph = () => {
           }}
         >
           <CartesianGrid strokeDasharray="3 3" stroke="#eeeeee" />
-          <XAxis 
-            dataKey="month" 
+          <XAxis
+            dataKey="date"
+            type="number"
+            axisLine={false}
+            tickLine={false}
+            domain={[xMin, xMax]}
+            tick={{ fontSize: 12, fill: '#666' }}
+            tickFormatter={(timestamp) =>
+              new Date(timestamp).toLocaleDateString()
+            }
+          />
+          <YAxis
             axisLine={false}
             tickLine={false}
             tick={{ fontSize: 12, fill: '#666' }}
           />
-          <YAxis 
-            axisLine={false}
-            tickLine={false}
-            tick={{ fontSize: 12, fill: '#666' }}
-          />
-          <Tooltip 
+          <Tooltip
             contentStyle={{
               backgroundColor: 'white',
               border: '1px solid #ccc',
-              borderRadius: '4px'
+              borderRadius: '4px',
             }}
           />
           <Legend />
-          <Line 
-            type="monotone" 
-            dataKey="blue" 
-            stroke="#4285f4" 
+          <Line
+            type="monotone"
+            dataKey="networth"
+            stroke="#2563EB"
             strokeWidth={2}
             dot={false}
-            name="Asset 1"
+            name="Networth"
           />
-          <Line 
-            type="monotone" 
-            dataKey="orange" 
-            stroke="#ff6b35" 
+          <Line
+            type="monotone"
+            dataKey="asset"
+            stroke="#16A34A"
             strokeWidth={2}
             dot={false}
-            name="Asset 2"
+            name="Asset"
           />
-          <Line 
-            type="monotone" 
-            dataKey="green" 
-            stroke="#4caf50" 
+          <Line
+            type="monotone"
+            dataKey="liability"
+            stroke="#EA580C"
             strokeWidth={2}
             dot={false}
-            name="Asset 3"
+            name="Liabilities"
           />
         </LineChart>
       </ResponsiveContainer>
