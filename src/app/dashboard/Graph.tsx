@@ -31,10 +31,25 @@ const data = [
   },
 ];
 
-const xMin = Number(new Date('2021-01-01'));
-const xMax = Number(new Date());
+// interface GraphProps {
+//   period: 'month' | 'year' | 'day';
+// }
 
-const Graph = () => {
+const Graph = (prop: { period: string }) => {
+  const now = new Date();
+  const xMax = now.getTime();
+  let xMin = xMax - 1000 * 60 * 60 * 24 * 365;
+  switch (prop.period) {
+    case 'month':
+      xMin = xMax - 1000 * 60 * 60 * 24 * 365;
+      break;
+    case 'year':
+      xMin = xMax - 1000 * 60 * 60 * 24 * 365 * 5;
+      break;
+    case 'day':
+      xMin = xMax - 1000 * 60 * 60 * 24 * 30;
+      break;
+  }
   return (
     <div className="w-full h-96 p-4 bg-white">
       <ResponsiveContainer width="100%" height="100%">
@@ -54,6 +69,7 @@ const Graph = () => {
             axisLine={false}
             tickLine={false}
             domain={[xMin, xMax]}
+            allowDataOverflow={true}
             tick={{ fontSize: 12, fill: '#666' }}
             tickFormatter={(timestamp) =>
               new Date(timestamp).toLocaleDateString()
