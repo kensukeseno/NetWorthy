@@ -102,7 +102,7 @@ const Graph = (prop: { period: string }) => {
             stroke="#16A34A"
             strokeWidth={2}
             dot={false}
-            name="Asset"
+            name="Assets"
           />
           <Line
             type="monotone"

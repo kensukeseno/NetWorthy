@@ -6,35 +6,11 @@ import Select from 'react-select';
 const GET_CURRENCIES = `
   query GetCurrencies {
     currencies {
-      id
       code
+      country
     }
   }
 `;
-
-// Map currency codes to country codes
-const currencyToCountry: { [key: string]: any } = {
-  USD: 'us',
-  EUR: 'eu',
-  JPY: 'jp',
-  GBP: 'gb',
-  AUD: 'au',
-  CAD: 'ca',
-  CHF: 'ch',
-  CNY: 'cn',
-  HKD: 'hk',
-  NZD: 'nz',
-  SEK: 'se',
-  KRW: 'kr',
-  SGD: 'sg',
-  NOK: 'no',
-  MXN: 'mx',
-  INR: 'in',
-  RUB: 'ru',
-  ZAR: 'za',
-  BRL: 'br',
-  TRY: 'tr',
-};
 
 export default function CurrencyDropdown() {
   // Execute the query
@@ -49,12 +25,12 @@ export default function CurrencyDropdown() {
   if (error) return <div>Error: {error.message}</div>;
 
   const options = data?.currencies?.map(
-    (currency: { id: number; code: string }) => ({
+    (currency: { code: string; country: string }) => ({
       value: currency.code,
       label: (
         <div className="flex items-center gap-2 ">
           <img
-            src={`https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/${currencyToCountry[currency.code]}.svg`}
+            src={`https://cdnjs.cloudflare.com/ajax/libs/flag-icon-css/3.5.0/flags/4x3/${currency.country}.svg`}
             alt={currency.code}
             className="w-4 h-4"
           />

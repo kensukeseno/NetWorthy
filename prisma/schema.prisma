@@ -95,6 +95,7 @@ model AssetType {
 model Currency {
   id   Int    @id @default(autoincrement())
   code String @unique @db.VarChar(3)
+  country String @unique @db.VarChar(2)
 
   asset     Asset[]
   liability Liability[]
