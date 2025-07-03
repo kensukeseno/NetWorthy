@@ -40,11 +40,13 @@ const GET_Liability_Values = `
 
 export default function Summary() {
   const { data: session, status } = useSession();
+  const skip = status === 'loading' || !session?.user?.email;
 
   // Execute the query to retreive assets
   const [assetResult] = useQuery({
     query: GET_Asset_Values,
     variables: { email: session?.user?.email },
+    pause: skip, // Ensure the query runs after the session is ready
   });
   const {
     data: assets,
@@ -55,29 +57,29 @@ export default function Summary() {
     (acc: number, asset: { value: string }) => acc + Number(asset.value),
     0,
   );
-  // Handle loading state
-  if (assetfetching) return <div>Loading data...</div>;
-  // Handle error state
-  if (assetError) return <div>Error: {assetError.message}</div>;
 
   // Execute the query to retreive liabilitys
   const [liabilityResult] = useQuery({
     query: GET_Liability_Values,
     variables: { email: session?.user?.email },
+    pause: skip,
   });
   const {
-    data: liabilitys,
+    data: liabilities,
     fetching: liabilityfetching,
     error: liabilityError,
   } = liabilityResult;
-  const totalLiabilities = liabilitys?.user.liability.reduce(
+  const totalLiabilities = liabilities?.user.liability.reduce(
     (acc: number, liability: { value: string }) =>
       acc + Number(liability.value),
     0,
   );
-  // Handle loading state
-  if (liabilityfetching) return <div>Loading data...</div>;
-  // Handle error state
+
+  if (status === 'loading') return <div>Loading session...</div>;
+  if (!session?.user?.email) return <div>No user session found.</div>;
+
+  if (assetfetching || liabilityfetching) return <div>Loading data...</div>;
+  if (assetError) return <div>Error: {assetError.message}</div>;
   if (liabilityError) return <div>Error: {liabilityError.message}</div>;
 
   const metrics: Metric[] = [
