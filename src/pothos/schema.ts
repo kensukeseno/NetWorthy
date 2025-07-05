@@ -89,6 +89,7 @@ builder.prismaObject('Currency', {
   fields: (t) => ({
     id: t.exposeInt('id'),
     code: t.exposeString('code'),
+    country: t.exposeString('country'),
     asset: t.relation('asset'),
     liability: t.relation('liability'),
   }),
