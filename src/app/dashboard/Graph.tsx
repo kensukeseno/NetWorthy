@@ -31,25 +31,13 @@ const data = [
   },
 ];
 
-// interface GraphProps {
-//   period: 'month' | 'year' | 'day';
-// }
+interface GraphProps {
+  xMax: Date;
+  xMin: Date;
+  dataset: string;
+}
 
-const Graph = (prop: { period: string }) => {
-  const now = new Date();
-  const xMax = now.getTime();
-  let xMin = xMax - 1000 * 60 * 60 * 24 * 365;
-  switch (prop.period) {
-    case 'month':
-      xMin = xMax - 1000 * 60 * 60 * 24 * 365;
-      break;
-    case 'year':
-      xMin = xMax - 1000 * 60 * 60 * 24 * 365 * 5;
-      break;
-    case 'day':
-      xMin = xMax - 1000 * 60 * 60 * 24 * 30;
-      break;
-  }
+const Graph = (prop: GraphProps) => {
   return (
     <div className="w-full h-96 p-4 bg-white">
       <ResponsiveContainer width="100%" height="100%">
@@ -68,7 +56,7 @@ const Graph = (prop: { period: string }) => {
             type="number"
             axisLine={false}
             tickLine={false}
-            domain={[xMin, xMax]}
+            domain={[prop.xMin.getTime(), prop.xMax.getTime()]}
             allowDataOverflow={true}
             tick={{ fontSize: 12, fill: '#666' }}
             tickFormatter={(timestamp) =>
@@ -88,34 +76,56 @@ const Graph = (prop: { period: string }) => {
             }}
           />
           <Legend />
-          <Line
-            type="monotone"
-            dataKey="networth"
-            stroke="#2563EB"
-            strokeWidth={2}
-            dot={false}
-            name="Networth"
-          />
-          <Line
-            type="monotone"
-            dataKey="asset"
-            stroke="#16A34A"
-            strokeWidth={2}
-            dot={false}
-            name="Assets"
-          />
-          <Line
-            type="monotone"
-            dataKey="liability"
-            stroke="#EA580C"
-            strokeWidth={2}
-            dot={false}
-            name="Liabilities"
-          />
+          {prop.dataset === 'all' ? (
+            <>
+              <NetworthDataset />
+              <AssetDataset />
+              <LiabilityDataset />
+            </>
+          ) : prop.dataset === 'networth' ? (
+            <NetworthDataset />
+          ) : prop.dataset === 'asset' ? (
+            <AssetDataset />
+          ) : (
+            <LiabilityDataset />
+          )}
         </LineChart>
       </ResponsiveContainer>
     </div>
   );
 };
+
+const NetworthDataset = () => (
+  <Line
+    type="monotone"
+    dataKey="networth"
+    stroke="#2563EB"
+    strokeWidth={2}
+    dot={false}
+    name="Networth"
+  />
+);
+
+const AssetDataset = () => (
+  <Line
+    type="monotone"
+    dataKey="asset"
+    stroke="#16A34A"
+    strokeWidth={2}
+    dot={false}
+    name="Assets"
+  />
+);
+
+const LiabilityDataset = () => (
+  <Line
+    type="monotone"
+    dataKey="liability"
+    stroke="#EA580C"
+    strokeWidth={2}
+    dot={false}
+    name="Liabilities"
+  />
+);
 
 export default Graph;

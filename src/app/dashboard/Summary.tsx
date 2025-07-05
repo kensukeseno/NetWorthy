@@ -85,7 +85,7 @@ export default function Summary() {
   const metrics: Metric[] = [
     {
       title: 'Your Total Networth',
-      value: totalAssets + totalLiabilities,
+      value: totalAssets - totalLiabilities,
       bgColor: 'bg-blue-600',
       textColor: 'text-white',
     },
