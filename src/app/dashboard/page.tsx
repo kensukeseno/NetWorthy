@@ -2,11 +2,32 @@
 import Summary from '@/app/dashboard/Summary';
 import Graph from '@/app/dashboard/Graph';
 import CurrencyButton from '@/app/dashboard/CurrencyButton';
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { DatePick } from './DatePicker';
+import { useSession } from 'next-auth/react';
+import HistoryFetcher from '@/utils/HistoryFetcher';
+
+interface HistoryDataType {
+  date: Date;
+  networth: number;
+  asset: number;
+  liability: number;
+}
 
 export default function DashBoard() {
-  const now = new Date();
+  const { data: session, status } = useSession();
+
+  const now = useMemo(() => new Date(), []);
+
+  const [resultList, setResultList] = useState<HistoryDataType[]>([]);
+
+  HistoryFetcher({
+    session: session,
+    now: now,
+    resultList: resultList,
+    setResultList: setResultList,
+  });
+
   const [xMax, setXMax] = useState<Date>(now);
   const [xMin, setXMin] = useState<Date>(
     new Date(now.getTime() - 1000 * 60 * 60 * 24 * 365),
@@ -60,7 +81,12 @@ export default function DashBoard() {
         </div>
         <CurrencyButton />
       </div>
-      <Graph xMax={xMax} xMin={xMin} dataset={dataset} />
+      <Graph
+        xMax={xMax}
+        xMin={xMin}
+        dataset={dataset}
+        historyData={resultList}
+      />
     </div>
   );
 }

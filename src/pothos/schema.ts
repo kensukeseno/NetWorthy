@@ -64,7 +64,31 @@ builder.prismaObject('Asset', {
     user: t.relation('user'),
     assetType: t.relation('assetType'),
     currency: t.relation('currency'),
-    assetHistory: t.relation('assetHistory'),
+    assetHistory: t.prismaField({
+      description: 'Get the most recent asset history from a given date',
+      type: ['AssetHistory'], // Return type is a list of AssetHistory
+      args: {
+        after: t.arg({ type: 'DateTime' }), // 'after' argument for cursor-based pagination (the ID or timestamp)
+      },
+      resolve: async (query, root, args, _ctx) => {
+        // Define pagination logic using Prisma
+        return prisma.assetHistory.findMany({
+          ...query,
+          where: {
+            asset: {
+              id: root.id,
+            },
+            ...(args.after && {
+              timestamp: { lte: args.after },
+            }),
+          },
+          orderBy: {
+            timestamp: 'desc',
+          },
+          ...(args.after && { take: 1 }), // Get only one asset  history when there is a "after" is used
+        });
+      },
+    }),
   }),
 });
 
@@ -108,7 +132,31 @@ builder.prismaObject('Liability', {
     user: t.relation('user'),
     liabilityType: t.relation('liabilityType'),
     currency: t.relation('currency'),
-    liabilityHistory: t.relation('liabilityHistory'),
+    liabilityHistory: t.prismaField({
+      description: 'Get the most recent liability history from a given date',
+      type: ['LiabilityHistory'], // Return type is a list of LiabilityHistory
+      args: {
+        after: t.arg({ type: 'DateTime' }), // 'after' argument for cursor-based pagination (the ID or timestamp)
+      },
+      resolve: async (query, root, args, _ctx) => {
+        // Define pagination logic using Prisma
+        return prisma.liabilityHistory.findMany({
+          ...query,
+          where: {
+            liability: {
+              id: root.id,
+            },
+            ...(args.after && {
+              timestamp: { lte: args.after },
+            }),
+          },
+          orderBy: {
+            timestamp: 'desc',
+          },
+          ...(args.after && { take: 1 }), // Get only one liability  history when there is a "after" is used
+        });
+      },
+    }),
   }),
 });
 
