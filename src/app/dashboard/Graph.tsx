@@ -10,31 +10,15 @@ import {
   ResponsiveContainer,
 } from 'recharts';
 
-// Mock data
-const data = [
-  { date: new Date('2021-01-01'), networth: 1000, asset: 1500, liability: 500 },
-  { date: new Date('2021-06-09'), networth: 1200, asset: 1700, liability: 500 },
-  { date: new Date('2021-11-17'), networth: 1400, asset: 2000, liability: 600 },
-  { date: new Date('2022-04-27'), networth: 1600, asset: 2200, liability: 600 },
-  { date: new Date('2022-10-04'), networth: 1800, asset: 2500, liability: 700 },
-  { date: new Date('2023-03-13'), networth: 2000, asset: 2700, liability: 700 },
-  { date: new Date('2023-08-20'), networth: 1200, asset: 1800, liability: 600 },
-  { date: new Date('2024-01-27'), networth: 2400, asset: 3000, liability: 600 },
-  { date: new Date('2024-07-05'), networth: 2600, asset: 3300, liability: 700 },
-  { date: new Date('2024-12-12'), networth: 2800, asset: 3600, liability: 800 },
-  { date: new Date('2025-05-20'), networth: 3000, asset: 3900, liability: 900 },
-  {
-    date: new Date('2025-06-07'),
-    networth: 3200,
-    asset: 4200,
-    liability: 1000,
-  },
-];
-
 interface GraphProps {
   xMax: Date;
   xMin: Date;
   dataset: string;
+  historyData: {
+    date: Date;
+    asset: number;
+    liability: number;
+  }[];
 }
 
 const Graph = (prop: GraphProps) => {
@@ -42,7 +26,7 @@ const Graph = (prop: GraphProps) => {
     <div className="w-full h-96 p-4 bg-white">
       <ResponsiveContainer width="100%" height="100%">
         <LineChart
-          data={data}
+          data={prop.historyData}
           margin={{
             top: 5,
             right: 30,
