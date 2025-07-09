@@ -19,12 +19,14 @@ export default function DashboardLayout({
   if (status === 'loading') return <p>Loading...</p>;
 
   return (
-    <div className="flex flex-row">
-      <SideBar width="w-[20%]" />
-      <div className="flex flex-col p-5 w-[80%]">
+    <>
+      <div className="fixed top-0 left-0 w-[20%]">
+        <SideBar />
+      </div>
+      <div className="relative flex flex-col p-5 top-0 left-[20%] w-[80%]">
         <Header />
         {children}
       </div>
-    </div>
+    </>
   );
 }

@@ -7,14 +7,10 @@ import {
   Cog8ToothIcon,
 } from '@heroicons/react/24/outline';
 
-type SideBarProps = {
-  width?: string;
-};
-
-export default function SideBar({ width }: SideBarProps) {
+export default function SideBar() {
   return (
     <div
-      className={`flex flex-col pt-5 ${width} h-screen border-r-4 border-gray-100 shadow`}
+      className={`flex flex-col pt-5 h-screen border-r-4 border-gray-100 shadow`}
     >
       <div className="flex flex-row items-center gap-2 mb-6 w-[80%] mx-auto">
         <img src="images/logo.png" className="w-8 h-8" />
