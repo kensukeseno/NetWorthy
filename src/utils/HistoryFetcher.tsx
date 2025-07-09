@@ -2,7 +2,7 @@ import { useEffect, useRef } from 'react';
 import { useClient } from 'urql';
 import { Session } from 'next-auth';
 
-interface DataType {
+interface SingleHistoryType {
   date: Date;
   networth: number;
   asset: number;
@@ -12,19 +12,11 @@ interface DataType {
 interface HistoryFetcherProps {
   session: Session | null;
   now: Date;
-  resultList: DataType[];
-  setResultList: React.Dispatch<React.SetStateAction<DataType[]>>;
+  setResultList: React.Dispatch<React.SetStateAction<SingleHistoryType[]>>;
+  timeScale: 'year' | 'month' | 'day';
 }
 
-export default function HistoryFetcher({
-  session,
-  now,
-  setResultList,
-}: HistoryFetcherProps) {
-  const client = useClient();
-  const hasFetchedRef = useRef(false);
-
-  const GET_Current_Asset_Values = `
+const GET_Current_Asset_Values = `
   query GetCurrentValues($email: String!) {
      user(email: $email){
       asset {
@@ -34,8 +26,7 @@ export default function HistoryFetcher({
   }
 `;
 
-  // GraphQL query
-  const GET_Asset_HISTORY = `
+const GET_Asset_HISTORY = `
   query GetHistory($email: String!, $after: DateTime!) {
     user(email: $email) {
       asset{
@@ -47,7 +38,7 @@ export default function HistoryFetcher({
   }
 `;
 
-  const GET_Current_Liability_Values = `
+const GET_Current_Liability_Values = `
   query GetCurrentValues($email: String!) {
      user(email: $email){
       liability {
@@ -57,8 +48,7 @@ export default function HistoryFetcher({
   }
 `;
 
-  // GraphQL query
-  const GET_Liability_HISTORY = `
+const GET_Liability_HISTORY = `
   query GetHistory($email: String!, $after: DateTime!) {
     user(email: $email) {
       liability{
@@ -70,21 +60,40 @@ export default function HistoryFetcher({
   }
 `;
 
+export default function HistoryFetcher({
+  session,
+  now,
+  setResultList,
+  timeScale,
+}: HistoryFetcherProps) {
+  // GraphQL client (Data is fetched manually hereuseQuery cannot be used because data fetching here is dynamic)
+  const client = useClient();
+  const hasFetchedRef = useRef<Record<'year' | 'month' | 'day', boolean>>({
+    year: false,
+    month: false,
+    day: false,
+  });
+
   useEffect(() => {
     if (!session?.user?.email) return;
-    if (hasFetchedRef.current) return; // prevent double-run
-    hasFetchedRef.current = true;
+    if (hasFetchedRef.current[timeScale]) return; // prevent double-run under development environment
+    // refresh the result set
+    hasFetchedRef.current = {
+      year: false,
+      month: false,
+      day: false,
+    };
+    setResultList([]);
+    hasFetchedRef.current[timeScale] = true;
 
     const fetchData = async () => {
-      let monthOffset = 0;
-
+      // Get the current asset values
       const currentAssetValues = await client
         .query(GET_Current_Asset_Values, {
           email: session.user?.email,
         })
         .toPromise();
 
-      // Handle query errors
       if (currentAssetValues.error) {
         console.error('Error fetching data:', currentAssetValues.error);
         return;
@@ -96,17 +105,18 @@ export default function HistoryFetcher({
         0,
       );
 
+      // Get the current liability values
       const currentLiabilityValues = await client
         .query(GET_Current_Liability_Values, {
           email: session.user?.email,
         })
         .toPromise();
 
-      // Handle query errors
       if (currentLiabilityValues.error) {
         console.error('Error fetching data:', currentLiabilityValues.error);
         return;
       }
+
       const currentLiabilityValue =
         currentLiabilityValues.data.user.liability.reduce(
           (acc: number, account: { value: string }) =>
@@ -114,23 +124,47 @@ export default function HistoryFetcher({
           0,
         );
 
+      // Update result list with the current values of assets and liabilities
       setResultList((prev) => [
         ...prev,
         {
           date: now,
-          networth: currentAssetValue + currentLiabilityValue,
+          networth: currentAssetValue - currentLiabilityValue,
           asset: currentAssetValue,
           liability: currentLiabilityValue,
         },
       ]);
 
-      // Continue fetching until the condition is met
+      // Get past values of assets and liabilities
+      // by going back in time until there's no more data available.
+
+      // Start dates:
+      //    (Yearly fetching) January 1st of the current year
+      //    (Monthly fetching) 1st of the current month
+      //    (Daily fetching) a day before of the current day,
+      const startDate = new Date(now);
+      if (timeScale === 'year') {
+        startDate.setDate(1);
+        startDate.setMonth(1);
+      } else if (timeScale === 'month') {
+        startDate.setDate(1);
+      } else {
+        startDate.setDate(startDate.getDate() - 1);
+      }
+
+      let timeScaleOffset = 0;
       while (true) {
-        const date = new Date(now);
-        date.setDate(1);
-        date.setMonth(date.getMonth() - monthOffset);
+        const date = new Date(startDate);
+        if (timeScale === 'year') {
+          date.setFullYear(date.getFullYear() - timeScaleOffset);
+        } else if (timeScale === 'month') {
+          date.setMonth(date.getMonth() - timeScaleOffset);
+        } else {
+          date.setDate(date.getDate() - timeScaleOffset);
+        }
+
         try {
-          // Manually run the query
+          // Get asset data
           const assetResult = await client
             .query(GET_Asset_HISTORY, {
               email: session.user?.email,
@@ -138,12 +172,12 @@ export default function HistoryFetcher({
             })
             .toPromise(); // Convert to promise to use async/await
 
-          // Handle query errors
           if (assetResult.error) {
             console.error('Error fetching data:', assetResult.error);
             break;
           }
 
+          // Get liability data
           const liabilityResult = await client
             .query(GET_Liability_HISTORY, {
               email: session.user?.email,
@@ -151,7 +185,6 @@ export default function HistoryFetcher({
             })
             .toPromise(); // Convert to promise to use async/await
 
-          // Handle query errors
           if (liabilityResult.error) {
             console.error('Error fetching data:', liabilityResult.error);
             break;
@@ -160,8 +193,9 @@ export default function HistoryFetcher({
           const assets = assetResult.data?.user?.asset;
           const liabilities = liabilityResult.data?.user?.liability;
 
+          // Aggregate all asset values
           let assetTotal = 0;
-          let assetIsFinished = false;
+          let assetIsFinished = false; // Flag to indicate whether there are more assets
           for (let asset of assets) {
             if (asset.assetHistory[0]) {
               assetTotal += Number(asset.assetHistory[0].value);
@@ -170,8 +204,10 @@ export default function HistoryFetcher({
               assetIsFinished = true;
             }
           }
+
+          // Aggregate all liability values
           let liabilityTotal = 0;
-          let liabilityIsFinished = false;
+          let liabilityIsFinished = false; // Flag to indicate whether there are more liabilities
           for (let liability of liabilities) {
             if (liability.liabilityHistory[0]) {
               liabilityTotal += Number(liability.liabilityHistory[0].value);
@@ -180,17 +216,22 @@ export default function HistoryFetcher({
               liabilityIsFinished = true;
             }
           }
+
+          // When all the data of assets and liabilities are retreived, exit the loop
+          if (assetIsFinished && liabilityIsFinished) break;
+
+          // Format values
           const data = {
             date: date,
-            networth: assetTotal + liabilityTotal,
+            networth: assetTotal - liabilityTotal,
             asset: assetTotal,
             liability: liabilityTotal,
           };
-          if (assetIsFinished && liabilityIsFinished) break;
+
           // Update state with new data
           setResultList((prev) => [...prev, data]);
-          monthOffset += 1;
-          console.log(data);
+
+          timeScaleOffset += 1;
         } catch (err) {
           console.error('Fetch error:', err);
           break;
@@ -199,5 +240,5 @@ export default function HistoryFetcher({
     };
 
     fetchData(); // Call the fetch function
-  }, [session]); // Re-run when session or totalValue changes
+  }, [session, timeScale]); // Run when session is available or time scale changes
 }
