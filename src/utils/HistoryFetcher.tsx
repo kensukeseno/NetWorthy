@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useCallback } from 'react';
 import { useClient } from 'urql';
 import { Session } from 'next-auth';
 
@@ -66,31 +66,37 @@ export default function HistoryFetcher({
   setResultList,
   timeScale,
 }: HistoryFetcherProps) {
-  // GraphQL client (Data is fetched manually hereuseQuery cannot be used because data fetching here is dynamic)
   const client = useClient();
-  const hasFetchedRef = useRef<Record<'year' | 'month' | 'day', boolean>>({
-    year: false,
-    month: false,
-    day: false,
-  });
-
-  useEffect(() => {
-    if (!session?.user?.email) return;
-    if (hasFetchedRef.current[timeScale]) return; // prevent double-run under development environment
-    // refresh the result set
-    hasFetchedRef.current = {
+  
+  // Use a more stable approach with a single ref for all state
+  const stateRef = useRef({
+    hasFetched: {
       year: false,
       month: false,
       day: false,
-    };
-    setResultList([]);
-    hasFetchedRef.current[timeScale] = true;
+    },
+    lastEmail: null as string | null,
+    isFetching: false,
+    setResultList: setResultList,
+  });
 
-    const fetchData = async () => {
+  // Update the setResultList reference
+  stateRef.current.setResultList = setResultList;
+
+  const fetchData = useCallback(async (email: string) => {
+    if (stateRef.current.isFetching) {
+      console.log('HistoryFetcher: Already fetching, skipping');
+      return;
+    }
+
+    console.log('HistoryFetcher: Starting fetch for email:', email, 'timeScale:', timeScale);
+    stateRef.current.isFetching = true;
+
+    try {
       // Get the current asset values
       const currentAssetValues = await client
         .query(GET_Current_Asset_Values, {
-          email: session.user?.email,
+          email: email,
         })
         .toPromise();
 
@@ -108,7 +114,7 @@ export default function HistoryFetcher({
       // Get the current liability values
       const currentLiabilityValues = await client
         .query(GET_Current_Liability_Values, {
-          email: session.user?.email,
+          email: email,
         })
         .toPromise();
 
@@ -125,7 +131,7 @@ export default function HistoryFetcher({
         );
 
       // Update result list with the current values of assets and liabilities
-      setResultList((prev) => [
+      stateRef.current.setResultList((prev) => [
         ...prev,
         {
           date: now,
@@ -136,12 +142,6 @@ export default function HistoryFetcher({
       ]);
 
       // Get past values of assets and liabilities
-      // by going back in time until there's no more data available.
-
-      // Start dates:
-      //    (Yearly fetching) January 1st of the current year
-      //    (Monthly fetching) 1st of the current month
-      //    (Daily fetching) a day before of the current day,
       const startDate = new Date(now);
       if (timeScale === 'year') {
         startDate.setDate(1);
@@ -167,10 +167,10 @@ export default function HistoryFetcher({
           // Get asset data
           const assetResult = await client
             .query(GET_Asset_HISTORY, {
-              email: session.user?.email,
+              email: email,
               after: date,
             })
-            .toPromise(); // Convert to promise to use async/await
+            .toPromise();
 
           if (assetResult.error) {
             console.error('Error fetching data:', assetResult.error);
@@ -180,10 +180,10 @@ export default function HistoryFetcher({
           // Get liability data
           const liabilityResult = await client
             .query(GET_Liability_HISTORY, {
-              email: session.user?.email,
+              email: email,
               after: date,
             })
-            .toPromise(); // Convert to promise to use async/await
+            .toPromise();
 
           if (liabilityResult.error) {
             console.error('Error fetching data:', liabilityResult.error);
@@ -195,7 +195,7 @@ export default function HistoryFetcher({
 
           // Aggregate all asset values
           let assetTotal = 0;
-          let assetIsFinished = false; // Flag to indicate whether there are more assets
+          let assetIsFinished = false;
           for (let asset of assets) {
             if (asset.assetHistory[0]) {
               assetTotal += Number(asset.assetHistory[0].value);
@@ -207,7 +207,7 @@ export default function HistoryFetcher({
 
           // Aggregate all liability values
           let liabilityTotal = 0;
-          let liabilityIsFinished = false; // Flag to indicate whether there are more liabilities
+          let liabilityIsFinished = false;
           for (let liability of liabilities) {
             if (liability.liabilityHistory[0]) {
               liabilityTotal += Number(liability.liabilityHistory[0].value);
@@ -217,7 +217,7 @@ export default function HistoryFetcher({
             }
           }
 
-          // When all the data of assets and liabilities are retreived, exit the loop
+          // When all the data of assets and liabilities are retrieved, exit the loop
           if (assetIsFinished && liabilityIsFinished) break;
 
           // Format values
@@ -229,7 +229,7 @@ export default function HistoryFetcher({
           };
 
           // Update state with new data
-          setResultList((prev) => [...prev, data]);
+          stateRef.current.setResultList((prev) => [...prev, data]);
 
           timeScaleOffset += 1;
         } catch (err) {
@@ -237,8 +237,43 @@ export default function HistoryFetcher({
           break;
         }
       }
-    };
+      
+      console.log('HistoryFetcher: Fetch completed for email:', email, 'timeScale:', timeScale);
+    } finally {
+      stateRef.current.isFetching = false;
+    }
+  }, [now, timeScale, client]);
 
-    fetchData(); // Call the fetch function
-  }, [session, timeScale]); // Run when session is available or time scale changes
+  useEffect(() => {
+    const email = session?.user?.email;
+    
+    if (!email) {
+      console.log('HistoryFetcher: No session email, skipping effect');
+      return;
+    }
+    
+    // Check if we've already fetched for this email and timeScale
+    if (stateRef.current.lastEmail === email && stateRef.current.hasFetched[timeScale]) {
+      console.log('HistoryFetcher: Already fetched for this email and timeScale, skipping');
+      return;
+    }
+    
+    // Update the last email
+    stateRef.current.lastEmail = email;
+    
+    console.log('HistoryFetcher: Effect triggered for email:', email, 'timeScale:', timeScale);
+    
+    // Reset fetch state
+    stateRef.current.hasFetched = {
+      year: false,
+      month: false,
+      day: false,
+    };
+    stateRef.current.setResultList([]);
+    stateRef.current.hasFetched[timeScale] = true;
+
+    fetchData(email);
+  }, [session?.user?.email, timeScale, fetchData]);
+
+  return null;
 }
