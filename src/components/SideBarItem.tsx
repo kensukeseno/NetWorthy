@@ -1,18 +1,20 @@
-import { useState } from 'react';
+import Link from 'next/link';
+
 type SideBarItemProps = {
   Icon: React.FC<React.SVGProps<SVGSVGElement>>;
   name: string;
+  href: string;
+  isActive: boolean;
 };
 
-export default function SideBarItem({ Icon, name }: SideBarItemProps) {
-  const [isActive, setActive] = useState(false);
-
+export default function SideBarItem({ Icon, name, href, isActive }: SideBarItemProps) {
   return (
-    <button
-      className={`${isActive && 'text-blue-500 bg-blue-50 rounded-sm'} flex flex-row gap-2 items-center p-2 w-full`}
+    <Link
+      href={href}
+      className={`${isActive ? 'text-blue-500 bg-blue-50 rounded-sm' : 'text-gray-600 hover:text-blue-500 hover:bg-blue-50'} flex flex-row gap-2 items-center p-2 w-full transition-colors`}
     >
       <Icon className="h-6 w-6" />
       <span>{name}</span>
-    </button>
+    </Link>
   );
 }
